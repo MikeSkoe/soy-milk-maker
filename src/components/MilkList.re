@@ -1,14 +1,14 @@
 open Reprocessing;
 
 type milkItem = {
-    milk: State.milk,
+    milk: Milk.t,
     pos: (int, int),
     size: (int, int),
 };
 
 let makeMilkButton = (
     index: int,
-    milk: State.milk,
+    milk: Milk.t,
 ) => {
     milk,
     pos: (index * 100 + 100, 400),
@@ -21,9 +21,9 @@ let draw = (state: State.t, env) => {
         |> List.iter(({size, pos, milk}) => {
             let (width, height) = size;
             let (x, y) = pos;
-            let name = State.string_of_product(milk.source);
+            let name = Product.string_of_product(milk.source);
             let cost = "cost: " ++ string_of_float(milk.time);
-            let profit = "profit: " ++ (State.profit_of_milk(milk) |> string_of_int);
+            let profit = "profit: " ++ (Milk.profit_of_milk(milk) |> string_of_int);
 
             Draw.pushStyle(env);
             Draw.pushMatrix(env);

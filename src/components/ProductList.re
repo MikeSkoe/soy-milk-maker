@@ -2,14 +2,16 @@ open Reprocessing;
 open State;
 
 type productButton = {
-    product: State.product,
+    product: Product.t,
     pos: (int, int),
     size: (int, int),
 }
 
+let prducts: list(Product.t) = [Soy, Nut, Coconut];
+
 let makeProductButton = (
     index: int,
-    product: State.product,
+    product: Product.t,
 ) => {
     product,
     pos: (index * 130 + 100, 100),
@@ -17,13 +19,13 @@ let makeProductButton = (
 };
 
 let draw = (state, env) => {
-    [Soy, Nut, Coconut]
+    prducts   
         |> List.mapi(makeProductButton)
         |> List.iter(button => {
             let (width, height) = button.size;
             let (x, y) = button.pos;
-            let name = string_of_product(button.product);
-            let cost = "price: " ++ (price_of_product(button.product) |> string_of_int);
+            let name = Product.string_of_product(button.product);
+            let cost = "price: " ++ (Product.price_of_product(button.product) |> string_of_int);
 
             Draw.pushStyle(env);
             Draw.pushMatrix(env);
@@ -51,15 +53,15 @@ let draw = (state, env) => {
 let mouseDown = (state: State.t, env) => {
     let mousePos = Env.mouse(env);
     let clickedProducts
-        = [Soy, Nut, Coconut]
-        |> List.mapi(makeProductButton)
-        |> List.filter(button => 
-            Collisions.rect_point(
-                ~rectPos=button.pos,
-                ~rectSize=button.size,
-                ~point=mousePos,
-            )
-        );
+        = prducts   
+            |> List.mapi(makeProductButton)
+            |> List.filter(button => 
+                Collisions.rect_point(
+                    ~rectPos=button.pos,
+                    ~rectSize=button.size,
+                    ~point=mousePos,
+                )
+            );
     
     switch clickedProducts {
         | [first, ..._] => Reducer.reducer(state, Buy(first.product))

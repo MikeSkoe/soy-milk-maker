@@ -6,29 +6,17 @@ let setup = env => {
   State.make()
 };
 
+let draw = (state, env) =>
+  state
+    |> GameScene.update(_, env)
+    |> GameScene.draw(_, env);
+  
 let mouseDown = (state, env) =>
   state
-    |> ProductList.mouseDown(_, env)
-    |> MilkList.mouseDown(_, env);
+    |> GameScene.mouseDown(_, env);
 
-let update = (state, env) => 
+let keyPressed = (state, env) =>
   state
-    |> ProductList.update(_, env)
-    |> MilkList.update(_, env);
+    |> GameScene.keyPressed(_, env);
 
-let draw = (state: State.t, env) =>
-  state
-    |> Stats.draw(_, env)
-    |> ProductList.draw(_, env)
-    |> MilkList.draw(_, env);
-
-let tick = (state, env) =>
-  state
-    |> update(_, env)
-    |> draw(_, env);
-
-let keyPressed = (state, env) => 
-  state
-    |> Stats.keyPressed(_, env);
-
-run(~setup, ~draw=tick, ~mouseDown, ~keyPressed, ());
+run(~setup, ~draw, ~mouseDown, ~keyPressed, ());
