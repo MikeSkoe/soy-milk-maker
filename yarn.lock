@@ -50,7 +50,7 @@ reprocessing@^0.3.2:
   dependencies:
     "@bsansouci/reasongl" "^0.2.5"
 
-"sdl2@github:bsansouci/SDL-mirror#fast":
+sdl2@bsansouci/SDL-mirror#fast:
   version "2.0.5"
   resolved "https://codeload.github.com/bsansouci/SDL-mirror/tar.gz/db0756eec3c5979b8291d739ebac9e8747ccbac2"
   dependencies:

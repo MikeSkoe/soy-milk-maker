@@ -1,29 +1,29 @@
 open Reprocessing;
-open State;
 
-type productButton = {
-    product: State.product,
+type milkItem = {
+    milk: State.milk,
     pos: (int, int),
     size: (int, int),
-}
-
-let makeProductButton = (
-    index: int,
-    product: State.product,
-) => {
-    product,
-    pos: (index * 130 + 100, 100),
-    size: (130, 35),
 };
 
-let draw = (state, env) => {
-    [Soy, Nut, Coconut]
-        |> List.mapi(makeProductButton)
-        |> List.iter(button => {
-            let (width, height) = button.size;
-            let (x, y) = button.pos;
-            let name = string_of_product(button.product);
-            let cost = "price: " ++ (price_of_product(button.product) |> string_of_int);
+let makeMilkButton = (
+    index: int,
+    milk: State.milk,
+) => {
+    milk,
+    pos: (index * 100 + 100, 400),
+    size: (100, 35),
+};
+
+let draw = (state: State.t, env) => {
+    state.milks
+        |> List.mapi(makeMilkButton)
+        |> List.iter(({size, pos, milk}) => {
+            let (width, height) = size;
+            let (x, y) = pos;
+            let name = State.string_of_product(milk.source);
+            let cost = "cost: " ++ string_of_float(milk.time);
+            let profit = "profit: " ++ (State.profit_of_milk(milk) |> string_of_int);
 
             Draw.pushStyle(env);
             Draw.pushMatrix(env);
@@ -40,6 +40,9 @@ let draw = (state, env) => {
 
                 Draw.translate(~x=0.0, ~y=80.0, env);
                 Draw.text(~body=cost, ~pos=(0, 0), env);
+
+                Draw.translate(~x=0.0, ~y=40.0, env);
+                Draw.text(~body=profit, ~pos=(0, 0), env);
             }
             Draw.popMatrix(env);
             Draw.popStyle(env);
@@ -51,8 +54,8 @@ let draw = (state, env) => {
 let mouseDown = (state: State.t, env) => {
     let mousePos = Env.mouse(env);
     let clickedProducts
-        = [Soy, Nut, Coconut]
-        |> List.mapi(makeProductButton)
+        = state.milks
+        |> List.mapi(makeMilkButton)
         |> List.filter(button => 
             Collisions.rect_point(
                 ~rectPos=button.pos,
@@ -62,11 +65,10 @@ let mouseDown = (state: State.t, env) => {
         );
     
     switch clickedProducts {
-        | [first, ..._] => Reducer.reducer(state, Buy(first.product))
+        | [first, ..._] => Reducer.reducer(state, Sell(first.milk))
         | [] => state
     };
-};
+}
 
-let update = (state: State.t, env) => {
-    state
-};
+let update = (state: State.t, env) =>
+    Reducer.reducer(state, Tick);

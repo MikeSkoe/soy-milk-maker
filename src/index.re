@@ -6,30 +6,29 @@ let setup = env => {
   State.make()
 };
 
-let mouseDown = (state, env) => {
+let mouseDown = (state, env) =>
   state
-    |> ProductList.mouseDown(_, env);
-}
+    |> ProductList.mouseDown(_, env)
+    |> MilkList.mouseDown(_, env);
 
-let update = (state, env) => {
-
+let update = (state, env) => 
   state
-    |> ProductList.update(_, env);
-};
+    |> ProductList.update(_, env)
+    |> MilkList.update(_, env);
 
-let draw = (state, env) => {
-
+let draw = (state: State.t, env) =>
   state
-    |> ProductList.draw(_, env);
-};
+    |> Stats.draw(_, env)
+    |> ProductList.draw(_, env)
+    |> MilkList.draw(_, env);
 
-let tick = (state, env) => {
-  Draw.background(Utils.color(~r=255, ~g=217, ~b=229, ~a=255), env);
-  Draw.fill(Constants.black, env);
-
+let tick = (state, env) =>
   state
     |> update(_, env)
     |> draw(_, env);
-};
 
-run(~setup, ~draw=tick, ~mouseDown, ());
+let keyPressed = (state, env) => 
+  state
+    |> Stats.keyPressed(_, env);
+
+run(~setup, ~draw=tick, ~mouseDown, ~keyPressed, ());
