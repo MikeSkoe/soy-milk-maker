@@ -4,37 +4,40 @@ type action =
     | Sell(Milk.t)
     | Restart;
 
-let tick = (state: State.t): State.t => {
+let tick = (state: State.gameState): State.gameState => ({
     ...state,
-    milks: state.milks
-        |> List.map((milk: Milk.t): Milk.t => {...milk, time: milk.time +. 0.1}),
-};
+    milks: List.map((milk: Milk.t): Milk.t => {...milk, time: milk.time +. 0.1}, state.milks),
+});
 
 let buy_product = (
-    state: State.t,
+    state: State.gameState,
     product,
-) => switch (
-    state.milks |> List.exists((milk: Milk.t) => milk.source == product, ),
+): State.gameState => switch (
+    state.milks |> List.exists((milk: Milk.t) => milk.source == product),
     state.money >= Product.price_of_product(product),
 ) {
-    | (false, true) => {
+    | (false, true) => ({
         ...state,
         money: state.money - Product.price_of_product(product),
         milks: state.milks @ [Milk.make(~source=product, ())],
-    }
+    })
     | (_, _) => state
-}
+};
 
-let sell_milk = (state: State.t, milk: Milk.t) => {
+let sell_milk = (state: State.gameState, milk: Milk.t): State.gameState => ({
     ...state,
     money: state.money
         + Milk.price_of_milk(milk),
     milks: state.milks
         |> List.filter((m: Milk.t) => m.source !== milk.source)
-}
+});
 
-let reducer = (state: State.t) => fun
-    | Tick => tick(state)
-    | Buy(product) => buy_product(state, product)
-    | Sell(milk) => sell_milk(state, milk)
-    | Restart => State.make();
+let reducer = (state: State.t, action) => switch state {
+    | Menu => state
+    | Game(gameState) => switch action {
+        | Tick => Game(tick(gameState))
+        | Buy(product) => Game(buy_product(gameState, product))
+        | Sell(milk) => Game(sell_milk(gameState, milk))
+        | Restart => State.make()
+    };
+};

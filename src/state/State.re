@@ -1,11 +1,15 @@
-type t = {
+type gameState = {
     bought: list(Product.t),
     milks: list(Milk.t),
     money: int,
-}
+};
 
-let make = () => {
+type t =
+    | Game(gameState)
+    | Menu;
+
+let make = () => Game({
     bought: [],
     milks: [],
     money: 100,
-};
+});
