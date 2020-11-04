@@ -1,14 +1,14 @@
 type t =
-    | Soy
-    | Nut
-    | Coconut;
+   | Soy
+   | Nut
+   | Coconut;
 
 let price_of_product = fun
-    | Soy => 50
-    | Nut => 100
-    | Coconut => 150;
+   | Soy => 50
+   | Nut => 100
+   | Coconut => 150;
 
 let string_of_product = fun
-    | Soy => "soy"
-    | Nut => "nut"
-    | Coconut => "coconut";
+   | Soy => "soy"
+   | Nut => "nut"
+   | Coconut => "coconut";

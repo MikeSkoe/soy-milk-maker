@@ -1,19 +1,20 @@
-let mouseDown = (state, env) =>
-  state
-    |> ProductList.mouseDown(_, env)
-    |> MilkList.mouseDown(_, env);
+let mouseDown = (env, gameState) =>
+   gameState
+      |> ProductList.mouseDown(env)
+      |> MilkList.mouseDown(env);
 
-let update = (state, env) => 
-  state
-    |> ProductList.update(_, env)
-    |> MilkList.update(_, env);
+let update = (env, gameState) => 
+   gameState
+      |> ProductList.update(env)
+      |> MilkList.update(env);
 
-let draw = (state, env) =>
-  state
-    |> Stats.draw(_, env)
-    |> ProductList.draw(_, env)
-    |> MilkList.draw(_, env);
+let keyPressed = (env, gameState: State.gameState) => 
+   gameState;
 
-let keyPressed = (state, env) => 
-  state
-    |> Stats.keyPressed(_, env);
+let draw = (env, gameState) => {
+   Stats.draw(env, gameState);
+   ProductList.draw(env, gameState);
+   MilkList.draw(env, gameState);
+
+   gameState;
+}

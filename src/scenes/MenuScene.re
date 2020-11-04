@@ -1,13 +1,14 @@
-let mouseDown = (state, env) =>
-  state
+let mouseDown = (_env, state: State.t) =>
+   state;
 
-let update = (state, env) => 
-  state
+let update = (_env, state: State.t) => 
+   state;
 
-let draw = (state, env) =>
-  state
-    |> Stats.draw(_, env)
+let draw = (env, state: State.t) => {
+   MenuOptions.draw(env, state);
 
-let keyPressed = (state, env) => 
-  state
-    |> Stats.keyPressed(_, env);
+   state;
+};
+
+let keyPressed = (env, state: State.t) => 
+   state;
