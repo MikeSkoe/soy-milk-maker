@@ -11,8 +11,8 @@ let makeMilkButton = (
     milk: Milk.t,
 ) => {
     milk,
-    pos: (index * 100 + 100, 400),
-    size: (100, 35),
+    pos: (index * 130 + 100, 400),
+    size: (130, 35),
 };
 
 let draw = (state: State.t, env) => switch state {

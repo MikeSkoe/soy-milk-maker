@@ -1,6 +1,7 @@
 type t = {
     source: Product.t,
     time: float,
+    id: int,
 };
 
 type milkState =
@@ -13,7 +14,7 @@ let state_of_milk = fun
     | {time} when time > 60.0 => Bad
     | _ => Good;
 
-let make = (~source, ~time=0.0, ()) =>  {source, time}
+let make = (~source, ~time=0.0, ~id=Random.int(999), ()) =>  {source, time, id}
 
 let profit_of_milk = milk => switch (state_of_milk(milk)) {
     | Preparing => -Product.price_of_product(milk.source)

@@ -4,12 +4,14 @@ type gameState = {
     money: int,
 };
 
+let makeGameState = (): gameState => ({
+    bought: [],
+    milks: [],
+    money: 150,
+})
+
 type t =
     | Game(gameState)
     | Menu;
 
-let make = () => Game({
-    bought: [],
-    milks: [],
-    money: 100,
-});
+let make = () => Game(makeGameState());

@@ -9,6 +9,7 @@
     "clean": "bsb -clean-world"
   },
   "dependencies": {
+    "bs-platform": "^8.3.2",
     "reprocessing": "^0.3.2"
   },
   "devDependencies": {
