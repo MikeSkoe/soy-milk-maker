@@ -1,57 +1,76 @@
 open Reprocessing;
+open Milk;
 
 type milkItem = {
-    milk: Milk.t,
+    milkMaker: Milk.milkMaker,
     pos: (int, int),
     size: (int, int),
 };
 
 let makeMilkButton = (
     index: int,
-    milk: Milk.t,
-) => {
-    milk,
-    pos: (index * 130 + 100, 400),
-    size: (130, 35),
+    milkMaker: Milk.milkMaker,
+): milkItem => {
+    milkMaker,
+    pos: (index * 140 + 100, 400),
+    size: (65 * 2, 82 * 2),
 };
 
-let draw = (env, gameState: State.gameState) => 
-    gameState.milks
+let draw = (env, image: Reprocessing.imageT, gameState: State.gameState) => 
+    gameState.milkMakers
         |> List.mapi(makeMilkButton)
-        |> List.iter(({size, pos, milk}) => {
-            let (width, height) = size;
+        |> List.iter(({pos, milkMaker}) => {
             let (x, y) = pos;
-            let name = Product.string_of_product(milk.source);
-            let cost = "cost: " ++ string_of_float(milk.time);
-            let profit = "profit: " ++ (Milk.profit_of_milk(milk) |> string_of_int);
 
-            Draw.pushStyle(env);
-            Draw.pushMatrix(env);
-            {
-                Draw.translate(~x=float_of_int(x), ~y=float_of_int(y), env);
-                Draw.noFill(env);
-                Draw.stroke(Constants.black, env)
-                Draw.rect(~pos=(0, 0), ~width, ~height, env);
+            switch milkMaker {
+                | Bought(optionalMilk) => {
+                    let drawImage = Image.draw(image, env);
 
-                Draw.translate(~x=5.0, ~y=0.0, env);
-                Draw.text(~body=name, ~pos=(0, 0), env);
+                    Draw.pushStyle(env);
+                    Draw.pushMatrix(env);
+                    {
+                        Draw.translate(~x=float_of_int(x), ~y=float_of_int(y), env);
+                        drawImage(Image.Maker(Bought));
 
-                Draw.scale(~x=0.5, ~y=0.5, env);
+                        Draw.translate(~x=12. *. 2., ~y=24. *. 2., env);
+                        switch optionalMilk {
+                            | Some(milk) => {
+                                let name = Product.string_of_product(milk.source);
+                                let profit = "price: " ++ (Milk.price_of_milk(milk) |> string_of_int) ++ "$";
 
-                Draw.translate(~x=0.0, ~y=80.0, env);
-                Draw.text(~body=cost, ~pos=(0, 0), env);
+                                drawImage(Image.Bottle(Milk.state_of_milk(milk)))
 
-                Draw.translate(~x=0.0, ~y=40.0, env);
-                Draw.text(~body=profit, ~pos=(0, 0), env);
+                                Draw.scale(~x=0.5, ~y=0.5, env);
+                                Draw.translate(~x=-20. *. 2., ~y=82. *. 2.8, env);
+                                Draw.text(~body=name, ~pos=(0, 0), env);
+                                Draw.translate(~x=0.0, ~y=15. *. 2., env);
+                                Draw.text(~body=profit, ~pos=(0, 0), env);
+                            }
+                            | _ => ()
+                        }
+                    }
+                    Draw.popMatrix(env);
+                    Draw.popStyle(env);
+                }
+                | NotBought => {
+                    let drawImage = Image.draw(image, env);
+
+                    Draw.pushStyle(env);
+                    Draw.pushMatrix(env);
+                    {
+                        Draw.translate(~x=float_of_int(x), ~y=float_of_int(y), env);
+
+                        drawImage(Image.Maker(NotBought));
+                    }
+                    Draw.popMatrix(env);
+                    Draw.popStyle(env);
+                }
             }
-            Draw.popMatrix(env);
-            Draw.popStyle(env);
         });
 
 let mouseDown = (env, gameState: State.gameState): State.gameState => {
     let mousePos = Env.mouse(env);
-    let clickedProducts
-        = gameState.milks
+    let clickedProducts = gameState.milkMakers
         |> List.mapi(makeMilkButton)
         |> List.filter(button => 
             Collisions.rect_point(
@@ -62,7 +81,11 @@ let mouseDown = (env, gameState: State.gameState): State.gameState => {
         );
 
     switch clickedProducts {
-        | [first, ..._] => GameReducer.dispatch(gameState, Sell(first.milk))
+        | [first, ..._] => switch first.milkMaker {
+            | Bought(Some(milk)) => GameReducer.dispatch(gameState, Sell(milk))
+            | NotBought => GameReducer.dispatch(gameState, BuyMilkMaker)
+            | _ => gameState
+        } 
         | [] => gameState
     };
 }

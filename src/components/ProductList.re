@@ -7,22 +7,22 @@ type productButton = {
     size: (int, int),
 }
 
-let prducts: list(Product.t) = [Soy, Nut, Coconut];
+let prducts: list(Product.t) = [Soy, Hazelnut, Almond, Walnut];
 
 let makeProductButton = (index, product) => {
     product,
-    pos: (index * 130 + 100, 100),
-    size: (130, 35),
+    pos: (index * 130 + 50, 100),
+    size: (55 * 2, 55 * 2),
 };
 
-let draw = (env, _gameState) =>
+let draw = (env, image, _gameState) =>
     prducts   
         |> List.mapi(makeProductButton)
         |> List.iter(button => {
             let (width, height) = button.size;
             let (x, y) = button.pos;
             let name = Product.string_of_product(button.product);
-            let cost = "price: " ++ (Product.price_of_product(button.product) |> string_of_int);
+            let cost = "price: " ++ (Product.price_of_product(button.product) |> string_of_int) ++ "$";
 
             Draw.pushStyle(env);
             Draw.pushMatrix(env);
@@ -30,14 +30,14 @@ let draw = (env, _gameState) =>
                 Draw.translate(~x=float_of_int(x), ~y=float_of_int(y), env);
                 Draw.noFill(env);
                 Draw.stroke(Constants.black, env)
-                Draw.rect(~pos=(0, 0), ~width, ~height, env);
 
-                Draw.translate(~x=5.0, ~y=0.0, env);
-                Draw.text(~body=name, ~pos=(0, 0), env);
+                Image.draw(image, env, Image.Product(button.product));
 
+                Draw.translate(~x=0.0, ~y=(55.0 *. 2.0), env);
                 Draw.scale(~x=0.5, ~y=0.5, env);
 
-                Draw.translate(~x=0.0, ~y=80.0, env);
+                Draw.text(~body=name, ~pos=(0, 0), env);
+                Draw.translate(~x=0.0, ~y=30.0, env);
                 Draw.text(~body=cost, ~pos=(0, 0), env);
             }
             Draw.popMatrix(env);

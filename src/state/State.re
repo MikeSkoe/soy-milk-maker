@@ -1,19 +1,34 @@
 type gameState = {
    bought: list(Product.t),
-   milks: list(Milk.t),
+   milkMakers: list(Milk.milkMaker),
    money: int,
 };
 
 let makeGameState = () => {
    bought: [],
-   milks: [],
+   milkMakers: [
+      Milk.Bought(None),
+      Milk.NotBought,
+      Milk.NotBought,
+   ],
    money: 150,
 };
 
-type t =
+type scene =
    | Game(gameState)
    | Menu;
 
-let make = () => Game(makeGameState());
+type t = {
+   image: Reprocessing.imageT,
+   scene: scene,
+};
 
-let makeGame = gameState => Game(gameState);
+let make = env => {
+   image: Reprocessing.Draw.loadImage(~filename="assets/milk.png", ~isPixel=true, env),
+   scene: Game(makeGameState()),
+};
+
+let makeGame = (state, gameState) => {
+   ...state,
+   scene: Game(gameState),
+}

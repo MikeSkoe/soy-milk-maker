@@ -1,8 +1,10 @@
+open State;
+
 type globalAction =
    | GoGame
    | GoMenu;
 
-let dispatch = _state => fun
-   | GoGame => State.Game(State.makeGameState())
-   | GoMenu => State.Menu;
-
+let dispatch = (state: State.t, action: globalAction): State.t => switch action {
+| GoGame => {...state, scene: Game(State.makeGameState())}
+| GoMenu => {...state, scene: Menu}
+};
